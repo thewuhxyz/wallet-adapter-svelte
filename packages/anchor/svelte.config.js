@@ -1,23 +1,15 @@
-import preprocess from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-static';
-import path from 'path';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
+/** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: preprocess(),
+	// Consult https://github.com/sveltejs/svelte-preprocess
+	// for more information about preprocessors
+	preprocess: [vitePreprocess({})],
 
 	kit: {
-		adapter: adapter(),
-		vite: {
-			adapter: adapter(),
-			optimizeDeps: {
-        include: ['@project-serum/anchor', '@solana/web3.js'],
-      },
-			resolve: {
-				alias: {
-					$lib: path.resolve('src/lib/')
-				}
-			}
-		}
+		// hydrate the <div id="svelte"> element in src/app.html
+		adapter: adapter({ fallback: 'index.html' })
 	}
 };
 

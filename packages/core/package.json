@@ -1,8 +1,8 @@
 {
-    "name": "@svelte-on-solana/wallet-adapter-core",
-    "version": "1.0.11-alpha.0",
+    "name": "@thewuh/wallet-adapter-svelte-core",
+    "version": "0.0.0",
     "author": "Svelte on Solana",
-    "repository": "https://github.com/svelte-on-solana/wallet-adapter",
+    "repository": "https://github.com/thewuhxyz/wallet-adapter-svelte",
     "license": "Apache-2.0",
     "type": "module",
     "sideEffects": false,
@@ -11,7 +11,8 @@
     "types": "lib/esm/index.d.ts",
     "exports": {
         "import": "./lib/esm/index.mjs",
-        "require": "./lib/cjs/index.js"
+        "require": "./lib/cjs/index.js",
+        "types": "./lib/esm/index.d.ts"
     },
     "files": [
         "lib",
@@ -23,15 +24,15 @@
     },
     "scripts": {
         "clean": "shx rm -rf lib/*",
-        "build": "yarn clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json",
+        "build": "pnpm clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json",
         "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > lib/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > lib/esm/package.json"
     },
     "dependencies": {
         "@types/node-fetch": "^2.6.2",
-        "@solana/wallet-adapter-base": "^0.9.19",
-        "@solana/web3.js": "^1.70.0",
-        "eventemitter3": "^4.0.7",
-        "svelte": "^3.0.0"
+        "@solana/wallet-adapter-base": "^0.9.23",
+        "@solana/web3.js": "~1.88.0",
+        "eventemitter3": "^5.0.1",
+        "svelte": "^4.2.18"
     },
     "keywords": [
         "svelte",

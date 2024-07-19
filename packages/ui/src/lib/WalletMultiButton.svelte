@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
+    import { walletStore } from '@thewuh/wallet-adapter-svelte-core';
     import WalletButton from './WalletButton.svelte';
     import WalletConnectButton from './WalletConnectButton.svelte';
     import WalletModal from './WalletModal.svelte';

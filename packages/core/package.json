@@ -6,16 +6,16 @@
     "license": "Apache-2.0",
     "type": "module",
     "sideEffects": false,
-    "main": "lib/cjs/index.js",
-    "module": "lib/esm/index.mjs",
-    "types": "lib/esm/index.d.ts",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.mjs",
+    "types": "dist/esm/index.d.ts",
     "exports": {
-        "import": "./lib/esm/index.mjs",
-        "require": "./lib/cjs/index.js",
-        "types": "./lib/esm/index.d.ts"
+        "import": "./dist/esm/index.mjs",
+        "require": "./dist/cjs/index.js",
+        "types": "./dist/esm/index.d.ts"
     },
     "files": [
-        "lib",
+        "dist",
         "src",
         "LICENSE"
     ],
@@ -23,9 +23,9 @@
         "access": "public"
     },
     "scripts": {
-        "clean": "shx rm -rf lib/*",
+        "clean": "shx rm -rf dist/*",
         "build": "pnpm clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json",
-        "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > lib/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > lib/esm/package.json"
+        "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > dist/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > dist/esm/package.json"
     },
     "dependencies": {
         "@types/node-fetch": "^2.6.2",

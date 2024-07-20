@@ -4,7 +4,7 @@
 
 	export let disabled: boolean = false;
 
-	let content;
+	let content: any;
 
 	$: ({ wallet, connect, connecting, connected } = $walletStore);
 

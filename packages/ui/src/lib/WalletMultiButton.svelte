@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { walletStore } from '@thewuh/wallet-adapter-svelte-core';
+    import { walletStore, type WalletStore } from '@thewuh/wallet-adapter-svelte-core';
     import WalletButton from './WalletButton.svelte';
     import WalletConnectButton from './WalletConnectButton.svelte';
     import WalletModal from './WalletModal.svelte';
     import './styles.css';
+    import {click, clickOutside} from "./onclick.js"
 
     export let maxNumberOfWallets = 3;
 
@@ -31,52 +32,21 @@
     };
     const closeModal = () => (modalVisible = false);
 
-    function showAddressContent(store) {
+    function showAddressContent(store: WalletStore) {
         const base58 = store.publicKey?.toBase58();
         if (!store.wallet || !base58) return null;
         return base58.slice(0, 4) + '..' + base58.slice(-4);
     }
 
-    async function connectWallet(event) {
+    async function connectWallet(event: any) {
         closeModal();
         await select(event.detail);
         await connect();
     }
 
-    async function disconnectWallet(event) {
+    async function disconnectWallet(event: any) {
         closeDropdown();
         await disconnect();
-    }
-
-    interface CallbackType {
-        (arg?: string): void;
-    }
-
-    function clickOutside(
-        node: HTMLElement,
-        callbackFunction: CallbackType,
-    ): unknown {
-        function onClick(event: MouseEvent) {
-            if (
-                node &&
-                event.target instanceof Node &&
-                !node.contains(event.target) &&
-                !event.defaultPrevented
-            ) {
-                callbackFunction();
-            }
-        }
-
-        document.body.addEventListener('click', onClick, true);
-
-        return {
-            update(newCallbackFunction: CallbackType) {
-                callbackFunction = newCallbackFunction;
-            },
-            destroy() {
-                document.body.removeEventListener('click', onClick, true);
-            },
-        };
     }
 </script>
 
@@ -109,21 +79,21 @@
                 }}
             >
                 <li
-                    on:click={copyAddress}
                     class="wallet-adapter-dropdown-list-item"
                     role="menuitem"
+                    use:click={copyAddress}
                 >
                     {copied ? 'Copied' : 'Copy address'}
                 </li>
                 <li
-                    on:click={openModal}
+                    use:click={openModal}
                     class="wallet-adapter-dropdown-list-item"
                     role="menuitem"
                 >
                     Connect a different wallet
                 </li>
                 <li
-                    on:click={disconnectWallet}
+                    use:click={disconnectWallet}
                     class="wallet-adapter-dropdown-list-item"
                     role="menuitem"
                 >

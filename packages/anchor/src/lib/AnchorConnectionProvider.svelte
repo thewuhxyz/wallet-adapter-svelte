@@ -1,43 +1,61 @@
-<script lang="ts">
-	import type { Commitment, ConnectionConfig } from '@solana/web3.js';
-	import { workSpace } from './workSpace';
-	import { web3, Program, AnchorProvider } from '@coral-xyz/anchor';
-	import { walletStore } from '@thewuh/wallet-adapter-svelte-core';
+<script lang="ts" generics="T extends Idl">
+	import { get, writable, type Writable } from 'svelte/store';
+	import { setContext } from 'svelte';
+	import { type WorkSpace, getWorkspace } from './workSpace.js';
+	import { web3, Program, AnchorProvider, type Idl, type Wallet } from '@coral-xyz/anchor';
+	import { walletStore, type WalletStore } from '@thewuh/wallet-adapter-svelte-core';
 
-	export let idl,
+	export let idl: T,
 		network: string,
-		config: Commitment | ConnectionConfig | undefined = 'processed';
+		config: web3.Commitment | web3.ConnectionConfig | undefined = 'processed';
 
-	const { PublicKey } = web3;
-	const programID = new PublicKey(idl.metadata.address);
-	const baseAccount = web3.Keypair.generate();
 	const systemProgram = web3.SystemProgram;
 	const connection = new web3.Connection(network, config);
 
-	function defineProgramAndProvider(walletStore) {
-		let { sendTransaction, signTransaction, signAllTransactions, signMessage, publicKey } =
-			walletStore;
-		const providerWallet = {
-			sendTransaction,
-			signTransaction,
-			signAllTransactions,
-			signMessage,
-			publicKey
+	function initializeWorkspace() {
+		const program = new Program(idl, new AnchorProvider(connection, {} as Wallet));
+
+		const workSpace = writable<WorkSpace<T>>({
+			connection,
+			network,
+			systemProgram,
+			provider: undefined,
+			program
+		});
+
+		setContext<Writable<WorkSpace<T>>>('workspace', workSpace);
+	}
+
+	function defineProgramAndProvider(walletStore: WalletStore) {
+		let { signTransaction, signAllTransactions, publicKey } = walletStore;
+
+		const isProvider = !!(signTransaction && signAllTransactions && publicKey);
+
+		const providerWallet = (): Wallet => {
+			if (!isProvider) {
+				return {} as Wallet;
+			} else {
+				return { signAllTransactions, signTransaction, publicKey } as Wallet;
+			}
 		};
-		const provider = new AnchorProvider(connection, providerWallet, {
+
+		const provider = new AnchorProvider(connection, providerWallet(), {
 			preflightCommitment: 'processed'
 		});
-		const program = new Program(idl, programID, provider);
+
+		const program = new Program(idl, provider);
+
+		const workSpace = getWorkspace<T>();
+
 		workSpace.set({
-			baseAccount,
 			connection,
-			provider,
+			provider: isProvider ? provider : undefined,
 			program,
 			systemProgram,
 			network
 		});
+
 		return {
-			baseAccount,
 			connection,
 			provider,
 			program,
@@ -46,7 +64,9 @@
 		};
 	}
 
-	$: $walletStore && $walletStore.publicKey && defineProgramAndProvider($walletStore);
+	initializeWorkspace();
+
+	$: defineProgramAndProvider($walletStore);
 </script>
 
 <slot />

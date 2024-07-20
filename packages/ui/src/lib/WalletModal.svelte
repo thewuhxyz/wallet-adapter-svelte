@@ -4,6 +4,7 @@
     import { createEventDispatcher } from 'svelte';
     import WalletButton from './WalletButton.svelte';
     import type { WalletName } from '@solana/wallet-adapter-base';
+    import {click, clickOutside} from "./onclick.js"
 
     export let maxNumberOfWallets;
 
@@ -22,7 +23,7 @@
 
     const dispatch = createEventDispatcher();
 
-    function connect(name) {
+    function connect(name: any) {
         dispatch('connect', name);
     }
 
@@ -34,13 +35,13 @@
         showExtensionsAvailables = !showExtensionsAvailables;
     }
 
-    function closeModal(e) {
+    function closeModal(e: Event) {
         if (e.target === backdrop || e.target === container) {
             dispatch('close');
         }
     }
 
-    function handleKeyup(e) {
+    function handleKeyup(e: KeyboardEvent) {
         if (e.key == 'Escape') {
             dispatch('close');
         }
@@ -66,7 +67,7 @@
     class="wallet-adapter-modal wallet-adapter-modal-fade-in"
     role="dialog"
     bind:this={backdrop}
-    on:click={e => closeModal(e)}
+    use:click={e => closeModal(e)}
 >
     <div class="wallet-adapter-modal-container" bind:this={container}>
         <div class="wallet-adapter-modal-wrapper">

@@ -1,0 +1,12 @@
+
+> @thewuh/wallet-adapter-svelte-core@0.0.0 build /Users/thewuh/Development/thewuh-wallet-adapter/packages/core
+> pnpm clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json
+
+
+> @thewuh/wallet-adapter-svelte-core@0.0.0 clean /Users/thewuh/Development/thewuh-wallet-adapter/packages/core
+> shx rm -rf lib/*
+
+
+> @thewuh/wallet-adapter-svelte-core@0.0.0 postbuild /Users/thewuh/Development/thewuh-wallet-adapter/packages/core
+> echo '{"type":"commonjs"}' | npx json > lib/cjs/package.json && echo '{"type":"module"} ' | npx json > lib/esm/package.json
+

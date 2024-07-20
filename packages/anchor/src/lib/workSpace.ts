@@ -1,14 +1,16 @@
-import { writable } from 'svelte/store';
-import type { Program, Provider, web3 } from '@project-serum/anchor';
-import type { Connection, Keypair } from '@solana/web3.js';
+import { type Writable } from 'svelte/store';
+import { getContext } from "svelte";
 
-export type WorkSpace = {
-  baseAccount?: Keypair;
-  connection: Connection;
+import type { Program, Provider, web3, Idl } from '@coral-xyz/anchor';
+
+export type WorkSpace<T extends Idl> = {
+  connection: web3.Connection;
   provider?: Provider;
-  program?: Program;
+  program?: Program<T>;
   systemProgram?: typeof web3.SystemProgram;
   network: string;
 };
 
-export const workSpace = writable<WorkSpace>(undefined);
+export function getWorkspace<T extends Idl>() {
+  return getContext<Writable<WorkSpace<T>>>("workspace")
+}

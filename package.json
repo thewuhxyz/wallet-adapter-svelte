@@ -16,14 +16,12 @@
         "clean": "turbo run clean",
         "build": "turbo run build",
         "test": "turbo run test",
-        "build:anchor": "pnpm --filter=@thewuh/wallet-adapter-svelte-anchor build",
-        "build:core": "pnpm --filter=@thewuh/wallet-adapter-svelte-core build",
-        "build:ui": "pnpm --filter=@thewuh/wallet-adapter-svelte-ui build",
-        "build:ui-c": "pnpm --filter=@thewuh/wallet-adapter-svelte-ui-cursed build",
-        "install:anchor": "pnpm --filter=@thewuh/wallet-adapter-svelte-anchor install",
-        "install:core": "pnpm --filter=@thewuh/wallet-adapter-svelte-core install",
-        "install:ui": "pnpm --filter=@thewuh/wallet-adapter-svelte-ui install",
-        "install:ui-c": "pnpm --filter=@thewuh/wallet-adapter-svelte-ui-cursed install",
+        "build:anchor": "pnpm build --filter=@thewuh/wallet-adapter-svelte-anchor",
+        "build:core": "pnpm build --filter=@thewuh/wallet-adapter-svelte-core",
+        "build:ui": "pnpm build --filter=@thewuh/wallet-adapter-svelte-ui",
+        "install:anchor": "pnpm install --filter=@thewuh/wallet-adapter-svelte-anchor",
+        "install:core": "pnpm install --filter=@thewuh/wallet-adapter-svelte-core",
+        "install:ui": "pnpm install --filter=@thewuh/wallet-adapter-svelte-ui",
         "deploy": "pnpm deploy:docs && pnpm deploy:example",
         "deploy:docs": "pnpm docs && gh-pages --dist docs --dotfiles",
         "deploy:example": "gh-pages --dist packages/starter/example/out --dest example --dotfiles",
@@ -49,7 +47,7 @@
         "prettier": "^2.5.1",
         "shx": "^0.3.3",
         "tslib": "^2.3.0",
-        "turbo": "^2.0.7",
+        "turbo": "^1.13.2",
         "typedoc": "^0.22.10",
         "typescript": "~5.0.2",
         "typescript-esm": "^2.0.0"
@@ -58,6 +56,7 @@
         "svelte2tsx": "^0.7.13"
     },
     "resolutions": {
-        "@solana/web3.js": "~1.88.0"
+        "@solana/web3.js": "~1.88.0",
+        "rpc-websockets": "~7.9.0"
     }
 }

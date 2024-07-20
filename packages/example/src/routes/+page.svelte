@@ -4,24 +4,30 @@
 	import { walletStore } from '@thewuh/wallet-adapter-svelte-core';
 	import { type DemoProgram } from '$lib/idl';
 	import { toast } from 'svelte-sonner';
-	import { DemoProgramClient } from '$lib/demo-program';
 	import Button from '$lib/components/ui/button/button.svelte';
+	import { PublicKey } from '@solana/web3.js';
 
 	$: w = getWorkspace<DemoProgram>();
 
-	$: ({ connection, program, provider } = $w);
+	$: ({ connection, program, provider, systemProgram } = $w);
 
 	let count: number | string = 0;
 	let balance: number | string = 0;
 
 	$: count, balance;
 
-	$: demoProgram = new DemoProgramClient(program, connection);
+	function getCounterAddress(authority: PublicKey) {
+		return PublicKey.findProgramAddressSync(
+			[Buffer.from('counter'), authority.toBuffer()],
+			program.programId
+		)[0];
+	}
 
 	const getCount = async () => {
-		if (!demoProgram || !$walletStore) return;
+		if (!provider?.publicKey) return;
 		try {
-			count = await demoProgram.count($walletStore);
+			count = (await program.account.counter.fetch(getCounterAddress(provider.publicKey)))
+				.count;
 		} catch (e) {
 			count = '0';
 		}
@@ -29,26 +35,29 @@
 
 	const getBalance = async () => {
 		try {
-			balance = await connection!.getBalance($walletStore.publicKey!);
+			balance = await connection.getBalance($walletStore.publicKey!);
 		} catch {
-			throw 'workspace not loaded';
+			throw 'wallet not connected';
 		}
 	};
 
 	const createCounter = async () => {
 		try {
-			console.log('workspace:', $w);
-			console.log('demo program:', demoProgram);
-			console.log('wallet store:', walletStore);
-			if (!demoProgram || !$walletStore) {
-				throw new Error('Progarm or Wallet not loaded');
+			if (!provider) {
+				throw new Error('Provider or Wallet not loaded');
 			}
-			const txSig = await demoProgram.createCounter($walletStore);
+			const txSig = await program.methods
+				.createCounter()
+				.accountsStrict({
+					authority: provider.publicKey,
+					counter: getCounterAddress(provider.publicKey!),
+					systemProgram: systemProgram.programId
+				})
+				.rpc();
+
 			toast(
 				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=devnet`
 			);
-			// await getBalance().catch()
-			await getCount().catch();
 		} catch (e: any) {
 			toast(`❌ ${e.message || e}`);
 		}
@@ -56,31 +65,31 @@
 
 	const incrementCount = async () => {
 		try {
-			if (!demoProgram || !$walletStore) {
-				throw new Error('Progarm or Wallet not loaded');
+			if (!provider) {
+				throw new Error('Provider or Wallet not loaded');
 			}
-      console.log("provider pubkey:", provider?.publicKey?.toBase58())
-			const txSig = await demoProgram.incrementCount($walletStore);
+			const txSig = await program.methods
+				.incrementCount()
+				.accountsStrict({
+					authority: provider.publicKey,
+					counter: getCounterAddress(provider.publicKey!)
+				})
+				.rpc();
 			toast(
 				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=devnet`
 			);
-			// await getBalance().catch()
-			await getCount().catch();
 		} catch (e: any) {
 			toast(`❌ ${e.message || e}`);
 		}
 	};
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-
 <div class="mt-16 flex flex-col items-center justify-center space-y-8">
 	<div class="w-[360px] text-right italic">
 		<p class="pr-4 text-lg">Demo app</p>
 	</div>
 
-	<h1 class="text-center text-lg">Demo app to show the power of Valet</h1>
+  {$walletStore.publicKey?.toBase58() || "not connected"}
 
 	<div class="hidde flex flex-col items-center justify-center p-4 text-center">
 		<div class="border p-4">
@@ -88,7 +97,7 @@
 				<h1>Counter</h1>
 				<h1 class="text-6xl">{count}</h1>
 			</div>
-			<!-- {#if $walletStore?.connected} -->
+			{#if provider}
 				<div class="space-x-2 p-2">
 					<Button on:click={incrementCount}>Increment 1x</Button>
 				</div>
@@ -97,11 +106,11 @@
 					<Button on:click={getBalance}>Get Balance: {balance}</Button>
 					<Button on:click={getCount}>Refresh Count</Button>
 				</div>
-			<!-- {/if} -->
+			{/if}
 		</div>
 	</div>
 
-	<div class="my-2 flex items-center justify-center space-x-2">
+	<div class="my-2 flex items-center justify-center">
 		<WalletMultiButton />
 	</div>
 </div>

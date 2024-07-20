@@ -17,5 +17,5 @@
 <WalletProvider {localStorageKey} {wallets} />
 <AnchorConnectionProvider {network} {idl}>
 	<slot />
+	<Toaster />
 </AnchorConnectionProvider>
-<Toaster />

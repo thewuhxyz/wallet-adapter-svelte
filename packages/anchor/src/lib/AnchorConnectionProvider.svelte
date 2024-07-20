@@ -1,7 +1,7 @@
 <script lang="ts" generics="T extends Idl">
-	import { writable, type Writable } from 'svelte/store';
-	import {setContext} from "svelte"
-	import { type WorkSpace } from './workSpace.js';
+	import { writable } from 'svelte/store';
+	import { setContext} from "svelte"
+	import { type WorkSpace, getWorkspace } from './workSpace.js';
 	import { web3, Program, AnchorProvider, type Idl, type Wallet, } from '@coral-xyz/anchor';
 	import { walletStore, type WalletStore } from '@thewuh/wallet-adapter-svelte-core';
 
@@ -12,37 +12,49 @@
 	const systemProgram = web3.SystemProgram;
 	const connection = new web3.Connection(network, config);
 
-	function setWorkspace<T extends Idl>(workspace: Writable<WorkSpace<T>>) {
-  		setContext("workspace", workspace)
+	const program = new Program(idl, new AnchorProvider(connection, {} as Wallet))
+	
+	const workSpace = writable<WorkSpace<T>>({
+		connection,
+		network,
+		systemProgram,
+		provider: undefined,
+		program
+	})
+
+	function initializeWorkspace() {
+  		setContext("workspace", workSpace)
 	}
 
 	function defineProgramAndProvider(walletStore: WalletStore) {
 		let { signTransaction, signAllTransactions, publicKey } =
 			walletStore;
+
+		const isProvider = !!(signTransaction && signAllTransactions && publicKey)
 		
-		const providerWallet = {
-			signTransaction,
-			signAllTransactions,
-			publicKey
+		const providerWallet = (): Wallet => {
+			if (!isProvider) {
+				return {} as Wallet
+			} else {
+				return { signAllTransactions, signTransaction, publicKey } as Wallet
+			}
 		};
 		
-		const provider = new AnchorProvider(connection, providerWallet as Wallet, {
+		const provider = new AnchorProvider(connection, providerWallet(), {
 			preflightCommitment: 'processed'
 		});
 
 		const program = new Program(idl, provider);
 
-		const workSpace = writable<WorkSpace<T>>(undefined);
-
+		const workSpace = getWorkspace<T>()
+			
 		workSpace.set({
 			connection,
-			provider,
+			provider: isProvider ? provider : undefined,
 			program,
 			systemProgram,
 			network
 		});
-
-		setWorkspace(workSpace)
 
 		return {
 			connection,
@@ -53,7 +65,9 @@
 		};
 	}
 
-	$: $walletStore && $walletStore.publicKey && defineProgramAndProvider($walletStore);
+	initializeWorkspace()
+
+	$: $walletStore && defineProgramAndProvider($walletStore);
 </script>
 
 <slot />

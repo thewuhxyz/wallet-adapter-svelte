@@ -72,7 +72,7 @@
                 aria-label="dropdown-list"
                 class="wallet-adapter-dropdown-list wallet-adapter-dropdown-list-active"
                 role="menu"
-                use:click={() => {
+                use:clickOutside={() => {
                     if (dropDrownVisible) {
                         closeDropdown();
                     }
@@ -81,7 +81,7 @@
                 <li
                     class="wallet-adapter-dropdown-list-item"
                     role="menuitem"
-                    use:clickOutside={copyAddress}
+                    use:click={copyAddress}
                 >
                     {copied ? 'Copied' : 'Copy address'}
                 </li>

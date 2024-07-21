@@ -51,6 +51,7 @@
 	"peerDependencies": {
 		"@solana/web3.js": "~1.88.0",
 		"@thewuh/wallet-adapter-svelte-core": "workspace:*",
+		"@thewuh/wallet-standard-wallet-adapter-svelte": "workspace:*",
 		"svelte": "^4.0.0"
 	},
 	"svelte": "./dist/index.js",

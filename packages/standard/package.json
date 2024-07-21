@@ -1,5 +1,5 @@
 {
-    "name": "@thewuh/wallet-adapter-svelte-core",
+    "name": "@thewuh/wallet-standard-wallet-adapter-svelte",
     "version": "0.0.0",
     "author": "Svelte on Solana",
     "repository": "https://github.com/thewuhxyz/wallet-adapter-svelte",
@@ -28,20 +28,18 @@
         "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > dist/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > dist/esm/package.json"
     },
     "peerDependencies": {
+        "@solana/wallet-adapter-base": "^0.9.23",
         "svelte": "^4.2.18"
     },
     "dependencies": {
-        "@solana-mobile/wallet-adapter-mobile": "^2.0.0",
-        "@solana/wallet-adapter-base": "^0.9.23",
         "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
         "@wallet-standard/app": "^1.0.1",
-        "@wallet-standard/base": "^1.0.1",
-        "@thewuh/wallet-standard-wallet-adapter-svelte": "workspace:*",
-        "eventemitter3": "^5.0.1"
+        "@wallet-standard/base": "^1.0.1"
     },
     "devDependencies": {
-        "@types/node-fetch": "^2.6.2",
-        "@solana/web3.js": "~1.88.0"
+        "@solana/wallet-adapter-base": "^0.9.23",
+        "svelte": "^4.2.18",
+        "shx": "^0.3.4"
     },
     "keywords": [
         "svelte",

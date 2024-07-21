@@ -9,12 +9,13 @@
 	const localStorageKey = 'walletAdapter';
 	const network = 'http://127.0.0.1:8899';
 
-	const wallets = [new PhantomWalletAdapter()];
+	const wallets = undefined;
+	// const wallets = [new PhantomWalletAdapter()];
 
 	const idl = DemoProgramIDLJson as DemoProgram;
 </script>
 
-<WalletProvider {localStorageKey} {wallets} />
+<WalletProvider {localStorageKey} wallets={wallets || []} />
 <AnchorConnectionProvider {network} {idl}>
 	<slot />
 	<Toaster />

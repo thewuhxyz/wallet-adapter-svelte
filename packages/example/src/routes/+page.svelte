@@ -56,7 +56,7 @@
 				.rpc();
 
 			toast(
-				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=devnet`
+				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=custom`
 			);
 		} catch (e: any) {
 			toast(`❌ ${e.message || e}`);
@@ -76,7 +76,7 @@
 				})
 				.rpc();
 			toast(
-				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=devnet`
+				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=custom`
 			);
 		} catch (e: any) {
 			toast(`❌ ${e.message || e}`);

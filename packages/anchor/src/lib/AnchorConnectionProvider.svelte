@@ -29,6 +29,10 @@
 	function defineProgramAndProvider(walletStore: WalletStore) {
 		let { signTransaction, signAllTransactions, publicKey } = walletStore;
 
+		console.log("publickey:", publicKey?.toBase58())
+		console.log("signTransaction:", signTransaction)
+		console.log("signAllTransactions:", signAllTransactions)
+
 		const isProvider = !!(signTransaction && signAllTransactions && publicKey);
 
 		const providerWallet = (): Wallet => {

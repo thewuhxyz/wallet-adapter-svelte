@@ -5,6 +5,7 @@ import type {
     SendTransactionOptions,
     SignerWalletAdapter,
     SignerWalletAdapterProps,
+    SignInMessageSignerWalletAdapter,
     SignInMessageSignerWalletAdapterProps,
     WalletError,
     WalletName,
@@ -16,6 +17,7 @@ import { WalletNotSelectedError } from './errors.js';
 import { getLocalStorage, setLocalStorage } from './localStorage.js';
 // import { standardWalletAdapterStore } from "./wallet-standard.js";
 import { standardWalletAdapterStore } from '@thewuh/wallet-standard-wallet-adapter-svelte';
+import { StandardWalletAdapter } from '@solana/wallet-standard-wallet-adapter-base';
 
 interface Wallet {
     adapter: Adapter;
@@ -164,6 +166,9 @@ function createWalletStore() {
 
         const adapter = walletsByName?.[name as WalletName] ?? null;
 
+        //@ts-ignore
+        console.log('here to test adapter update name signTransaction here... :', adapter?.signTransaction);
+
         setLocalStorage(localStorageKey, name);
         updateWalletState(adapter);
     }
@@ -174,19 +179,26 @@ function createWalletStore() {
         let signTransaction: SignerWalletAdapter['signTransaction'] | undefined = undefined;
         let signAllTransactions: SignerWalletAdapter['signAllTransactions'] | undefined = undefined;
         let signMessage: MessageSignerWalletAdapter['signMessage'] | undefined = undefined;
-        let signIn: SignInMessageSignerWalletAdapterProps['signIn'] | undefined = undefined;
+        let signIn: SignInMessageSignerWalletAdapter['signIn'] | undefined = undefined;
 
         if (adapter) {
+            // check for supported features if they exist for adapter. `in` exhibiting unexpected behaviour
+            // with `StandardWalletAdapter`. May be looking for feature in `BaseWalletAdapter` which
+            // `StandardWalletAdapter` extends. Add fallback in case.
+
             // Sign a transaction if the wallet supports it
             if ('signTransaction' in adapter) {
-                console.log("sign transaction in adapter")
                 signTransaction = async function <T extends Transaction | VersionedTransaction>(transaction: T) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
                     return await adapter.signTransaction(transaction);
                 };
-            } else {
-                console.log("no signTransaction in adapter")
+            } else if (adapter instanceof StandardWalletAdapter) {
+                signTransaction = async function <T extends Transaction | VersionedTransaction>(transaction: T) {
+                    const { connected } = get(walletStore);
+                    if (!connected) throw newError(new WalletNotConnectedError());
+                    return await adapter.signTransaction!(transaction);
+                };
             }
 
             // Sign multiple transactions if the wallet supports it
@@ -194,7 +206,13 @@ function createWalletStore() {
                 signAllTransactions = async function <T extends Transaction | VersionedTransaction>(transactions: T[]) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
-                    return await adapter.signAllTransactions(transactions);
+                    return await adapter.signAllTransactions!(transactions);
+                };
+            } else if (adapter instanceof StandardWalletAdapter) {
+                signAllTransactions = async function <T extends Transaction | VersionedTransaction>(transactions: T[]) {
+                    const { connected } = get(walletStore);
+                    if (!connected) throw newError(new WalletNotConnectedError());
+                    return await adapter.signAllTransactions!(transactions);
                 };
             }
 
@@ -203,26 +221,30 @@ function createWalletStore() {
                 signMessage = async function (message: Uint8Array) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
-                    return await adapter.signMessage(message);
+                    return await adapter.signMessage!(message);
+                };
+            } else if (adapter instanceof StandardWalletAdapter) {
+                signMessage = async function (message: Uint8Array) {
+                    const { connected } = get(walletStore);
+                    if (!connected) throw newError(new WalletNotConnectedError());
+                    return await adapter.signMessage!(message);
                 };
             }
 
+            // signIn doesn't seem to be affected by this
+
+            // sign in if the wallet supports it
             if ('signIn' in adapter) {
+                console.log('signIn in adapter');
                 signIn = async function (input?) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
-                    return await adapter.signIn(input);
+                    return await adapter.signIn!(input);
                 };
-            } else {
-                console.log("no signIn in adapter")
             }
 
             addAdapterEventListeners(adapter);
         }
-
-        console.log("update adapter:", adapter)
-        console.log("update adapter sign transactions:", signTransaction)
-        console.log("update adapter signIn :", signIn)
 
         update((store: WalletStore) => ({
             ...store,
@@ -277,10 +299,10 @@ export async function initialize({
         return walletsByName;
     }, {});
 
-    console.log("wallets by name:", walletsByName)
+    console.log('wallets by name:', walletsByName);
 
     // Wrap adapters to conform to the `Wallet` interface
-    wallets.forEach((adapter) => console.log("ready state:", adapter.readyState));
+    wallets.forEach((adapter) => console.log('ready state:', adapter.readyState));
 
     const mapWallets = wallets.map((adapter) => ({
         adapter,

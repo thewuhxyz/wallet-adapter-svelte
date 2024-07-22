@@ -1,1 +1,1 @@
-export * from './use-standard-wallet-adapters.js';
+export * from './standard-wallet-adapters-store.js';

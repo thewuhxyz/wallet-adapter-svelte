@@ -4,26 +4,25 @@
 	import type { WalletError } from '@solana/wallet-adapter-base';
 	import { standardWalletAdapterStore } from '@thewuh/wallet-standard-wallet-adapter-svelte';
 
-	standardWalletAdapterStore.mountListeners();
+	standardWalletAdapterStore.initialize();
 
 	export let localStorageKey: string,
 		wallets: Adapter[],
 		autoConnect = false,
 		onError = (error: WalletError) => console.error(error);
 
-	$: $standardWalletAdapterStore && console.log('standard store:', $standardWalletAdapterStore);
 
-	$: wallet = standardWalletAdapterStore.fetchWallets(wallets);
+	$: {
+		$standardWalletAdapterStore
 
-	console.log('wallets:', wallet);
-
-	$: $standardWalletAdapterStore &&
 		initialize({
-			wallets: standardWalletAdapterStore.fetchWallets(wallets),
+			wallets: standardWalletAdapterStore.getAdapters(wallets),
+			// wallets,
 			autoConnect,
 			localStorageKey,
 			onError
 		});
+	}
 </script>
 
 <svelte:head>

@@ -7,18 +7,17 @@ import { get, writable } from 'svelte/store';
 
 export const standardWalletAdapterStore = getStandardWalletAdapterStore()
 
-function getStandardWalletAdapterStore() {
+export function getStandardWalletAdapterStore() {
     const { subscribe, update } = writable<Readonly<StandardWalletAdapter[]>>([]);
 
     const { get: getWallets, on } = getStandardWallets();
 
     const standardAdapter = () => get({ subscribe });
 
-    function mountListeners() {
+    function initialize() {
         onMount(() => {
-            console.log('run from onMount');
             initializeAdapters();
-            console.log("adapters:", standardAdapter())
+
             const { invalidate } = setupListeners();
 
             return invalidate;
@@ -55,27 +54,27 @@ function getStandardWalletAdapterStore() {
         update((current) => updateAdapter(current, wallets));
     }
 
-    function fetchWallets(adapters: Adapter[]): Adapter[] {
+    function getAdapters(adapters: Adapter[]): Adapter[] {
         const warnings = new Set<WalletName>();
         return [
             ...standardAdapter(),
             ...adapters
-            // .filter(({ name }) => {
-            //     if (standardAdapter().some((standardAdapter) => standardAdapter.name === name)) {
-            //         if (!warnings.has(name)) {
-            //             warnings.add(name);
-            //             console.warn(
-            //                 `${name} was registered as a Standard Wallet. The Wallet Adapter for ${name} can be removed from your app.`
-            //             );
-            //         }
-            //         return false;
-            //     }
-            //     return true;
-            // }),
+            .filter(({ name }) => {
+                if (standardAdapter().some((standardAdapter) => standardAdapter.name === name)) {
+                    if (!warnings.has(name)) {
+                        warnings.add(name);
+                        console.warn(
+                            `${name} was registered as a Standard Wallet. The Wallet Adapter for ${name} can be removed from your app.`
+                        );
+                    }
+                    return false;
+                }
+                return true;
+            }),
         ];
     }
 
-    return { subscribe, mountListeners, setupListeners, initializeAdapters, destroyAdapters, fetchWallets };
+    return { subscribe, initialize, getAdapters };
 }
 
 function updateAdapter(

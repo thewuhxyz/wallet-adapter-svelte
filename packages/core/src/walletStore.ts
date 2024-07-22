@@ -5,14 +5,18 @@ import type {
     SendTransactionOptions,
     SignerWalletAdapter,
     SignerWalletAdapterProps,
+    SignInMessageSignerWalletAdapter,
+    SignInMessageSignerWalletAdapterProps,
     WalletError,
     WalletName,
 } from '@solana/wallet-adapter-base';
 import { WalletNotConnectedError, WalletNotReadyError, WalletReadyState } from '@solana/wallet-adapter-base';
-import type { Connection, PublicKey, Transaction, TransactionSignature, VersionedTransaction } from '@solana/web3.js';
+import { Connection, PublicKey, Transaction, TransactionSignature, VersionedTransaction } from '@solana/web3.js';
 import { get, writable } from 'svelte/store';
 import { WalletNotSelectedError } from './errors.js';
 import { getLocalStorage, setLocalStorage } from './localStorage.js';
+import { createStandardWalletAdapterStore } from '@thewuh/wallet-standard-wallet-adapter-svelte';
+import { StandardWalletAdapter } from '@solana/wallet-standard-wallet-adapter-base';
 
 interface Wallet {
     adapter: Adapter;
@@ -20,17 +24,17 @@ interface Wallet {
 }
 
 type ErrorHandler = (error: WalletError) => void;
-type WalletPropsConfig = Pick<WalletStore, 'autoConnect' | 'localStorageKey' | 'onError'> & { wallets: Adapter[]};
+type WalletPropsConfig = Pick<WalletStore, 'autoConnect' | 'localStorageKey' | 'onError'> & { wallets: Adapter[] };
 type WalletReturnConfig = Pick<WalletStore, 'wallets' | 'autoConnect' | 'localStorageKey' | 'onError'>;
 
 type WalletStatus = Pick<WalletStore, 'connected' | 'publicKey'>;
 
 export interface WalletStore {
-	// props
+    // props
     autoConnect: boolean;
     wallets: Wallet[];
 
-	// wallet state
+    // wallet state
     adapter: Adapter | null;
     connected: boolean;
     connecting: boolean;
@@ -43,7 +47,7 @@ export interface WalletStore {
     walletsByName: Record<WalletName, Adapter>;
     name: WalletName | null;
 
-	// wallet methods
+    // wallet methods
     connect(): Promise<void>;
     disconnect(): Promise<void>;
     select(walletName: WalletName): void;
@@ -55,16 +59,18 @@ export interface WalletStore {
     signAllTransactions: SignerWalletAdapterProps['signAllTransactions'] | undefined;
     signMessage: MessageSignerWalletAdapterProps['signMessage'] | undefined;
     signTransaction: SignerWalletAdapterProps['signTransaction'] | undefined;
+    signIn: SignInMessageSignerWalletAdapterProps['signIn'] | undefined;
 }
 
 export const walletStore = createWalletStore();
+export const standardWalletAdapterStore = createStandardWalletAdapterStore();
 
 function addAdapterEventListeners(adapter: Adapter) {
     const { onError, wallets } = get(walletStore);
 
-    wallets.forEach(({adapter}) => {
+    wallets.forEach(({ adapter }) => {
         adapter.on('readyStateChange', onReadyStateChange, adapter);
-    })
+    });
     adapter.on('connect', onConnect);
     adapter.on('disconnect', onDisconnect);
     adapter.on('error', onError);
@@ -134,6 +140,7 @@ function createWalletStore() {
         signTransaction: undefined,
         signAllTransactions: undefined,
         signMessage: undefined,
+        signIn: undefined,
     });
 
     function updateWalletState(adapter: Adapter | null) {
@@ -142,16 +149,16 @@ function createWalletStore() {
             ...store,
             name: adapter?.name || null,
             wallet: adapter,
-            ready: adapter?.readyState || 'Unsupported' as WalletReadyState,
+            ready: adapter?.readyState || ('Unsupported' as WalletReadyState),
             publicKey: adapter?.publicKey || null,
             connected: adapter?.connected || false,
         }));
 
         if (!adapter) return;
 
-		if (shouldAutoConnect()) {
-			autoConnect();
-		}
+        if (shouldAutoConnect()) {
+            autoConnect();
+        }
     }
 
     function updateWalletName(name: WalletName | null) {
@@ -169,39 +176,61 @@ function createWalletStore() {
         let signTransaction: SignerWalletAdapter['signTransaction'] | undefined = undefined;
         let signAllTransactions: SignerWalletAdapter['signAllTransactions'] | undefined = undefined;
         let signMessage: MessageSignerWalletAdapter['signMessage'] | undefined = undefined;
+        let signIn: SignInMessageSignerWalletAdapter['signIn'] | undefined = undefined;
 
         if (adapter) {
+            // check for supported features if they exist for adapter. `in` exhibiting unexpected behaviour
+            // with `StandardWalletAdapter`. May be looking for feature in `BaseWalletAdapter` which
+            // `StandardWalletAdapter` extends. Add fallback in case.
+
             // Sign a transaction if the wallet supports it
-            if ('signTransaction' in adapter) {
+            if ('signTransaction' in adapter || adapter instanceof StandardWalletAdapter) {
                 signTransaction = async function <T extends Transaction | VersionedTransaction>(transaction: T) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
-                    return await adapter.signTransaction(transaction);
+                    return await adapter.signTransaction!(transaction);
                 };
             }
 
             // Sign multiple transactions if the wallet supports it
-            if ('signAllTransactions' in adapter) {
+            if ('signAllTransactions' in adapter || adapter instanceof StandardWalletAdapter) {
                 signAllTransactions = async function <T extends Transaction | VersionedTransaction>(transactions: T[]) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
-                    return await adapter.signAllTransactions(transactions);
+                    return await adapter.signAllTransactions!(transactions);
                 };
             }
 
             // Sign an arbitrary message if the wallet supports it
-            if ('signMessage' in adapter) {
+            if ('signMessage' in adapter || adapter instanceof StandardWalletAdapter) {
                 signMessage = async function (message: Uint8Array) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
-                    return await adapter.signMessage(message);
+                    return await adapter.signMessage!(message);
+                };
+            }
+
+            // signIn doesn't seem to be affected by this for some reason
+            // sign in if the wallet supports it
+            if ('signIn' in adapter) {
+                signIn = async function (input?) {
+                    const { connected } = get(walletStore);
+                    if (!connected) throw newError(new WalletNotConnectedError());
+                    return await adapter.signIn!(input);
                 };
             }
 
             addAdapterEventListeners(adapter);
         }
 
-        update((store: WalletStore) => ({ ...store, adapter, signTransaction, signAllTransactions, signMessage }));
+        update((store: WalletStore) => ({
+            ...store,
+            adapter,
+            signTransaction,
+            signAllTransactions,
+            signMessage,
+            signIn,
+        }));
     }
 
     return {
@@ -251,7 +280,7 @@ export async function initialize({
     const mapWallets = wallets.map((adapter) => ({
         adapter,
         readyState: adapter.readyState,
-    }))
+    }));
 
     walletStore.updateConfig({
         wallets: mapWallets,
@@ -289,10 +318,10 @@ function onDisconnect() {
 }
 
 function onReadyStateChange(this: Adapter, readyState: WalletReadyState) {
-	const { adapter, wallets } = get(walletStore);
-	if (!adapter) return;
+    const { adapter, wallets } = get(walletStore);
+    if (!adapter) return;
 
-	walletStore.setReady(adapter.readyState);
+    walletStore.setReady(adapter.readyState);
 
     // When the wallets change, start to listen for changes to their `readyState`
     const walletIndex = wallets.findIndex(({ adapter }) => adapter.name === this.name);
@@ -303,7 +332,7 @@ function onReadyStateChange(this: Adapter, readyState: WalletReadyState) {
             ...wallets.slice(0, walletIndex),
             { ...wallets[walletIndex], readyState },
             ...wallets.slice(walletIndex + 1),
-        ])
+        ]);
     }
 }
 
@@ -311,9 +340,9 @@ function removeAdapterEventListeners(): void {
     const { adapter, onError, wallets } = get(walletStore);
     if (!adapter) return;
 
-    wallets.forEach(({adapter}) => {
+    wallets.forEach(({ adapter }) => {
         adapter.off('readyStateChange', onReadyStateChange, adapter);
-    })
+    });
     adapter.off('connect', onConnect);
     adapter.off('disconnect', onDisconnect);
     adapter.off('error', onError);
@@ -346,10 +375,7 @@ function shouldAutoConnect(): boolean {
     return !(
         !autoConnect ||
         !adapter ||
-        !(
-          ready === WalletReadyState.Installed ||
-          ready === WalletReadyState.Loadable
-        ) ||
+        !(ready === WalletReadyState.Installed || ready === WalletReadyState.Loadable) ||
         connected ||
         connecting
     );

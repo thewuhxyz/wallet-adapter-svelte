@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Adapter } from '@solana/wallet-adapter-base';
-	import { initialize } from '@thewuh/wallet-adapter-svelte-core';
+	import { initialize, standardWalletAdapterStore } from '@thewuh/wallet-adapter-svelte-core';
 	import type { WalletError } from '@solana/wallet-adapter-base';
 
 	export let localStorageKey: string,
@@ -8,7 +8,18 @@
 		autoConnect = false,
 		onError = (error: WalletError) => console.error(error);
 
-	$: wallets && initialize({ wallets, autoConnect, localStorageKey, onError });
+	standardWalletAdapterStore.initialize();
+
+	$: {
+		$standardWalletAdapterStore;
+
+		initialize({
+			wallets: standardWalletAdapterStore.getAdapters(wallets),
+			autoConnect,
+			localStorageKey,
+			onError
+		});
+	}
 </script>
 
 <svelte:head>

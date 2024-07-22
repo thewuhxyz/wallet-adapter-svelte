@@ -5,16 +5,20 @@
 	import { type DemoProgram } from '$lib/idl';
 	import { toast } from 'svelte-sonner';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { PublicKey } from '@solana/web3.js';
+	import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 	$: w = getWorkspace<DemoProgram>();
 
 	$: ({ connection, program, provider, systemProgram } = $w);
 
-	let count: number | string = 0;
+	let count: number | string = '-';
 	let balance: number | string = 0;
 
+	$: loading = false;
+
 	$: count, balance;
+
+	$: if (!provider) count = '-';
 
 	function getCounterAddress(authority: PublicKey) {
 		return PublicKey.findProgramAddressSync(
@@ -24,20 +28,32 @@
 	}
 
 	const getCount = async () => {
-		if (!provider?.publicKey) return;
 		try {
+			if (!provider?.publicKey) {
+				throw new Error('Provider or Wallet not loaded');
+			}
+
+			loading = true;
 			count = (await program.account.counter.fetch(getCounterAddress(provider.publicKey)))
 				.count;
-		} catch (e) {
-			count = '0';
+		} catch (e: any) {
+			toast.error(`${e.message || e}`);
+			count = '-';
+		} finally {
+			loading = false;
 		}
 	};
 
 	const getBalance = async () => {
 		try {
-			balance = await connection.getBalance($walletStore.publicKey!);
-		} catch {
-			throw 'wallet not connected';
+			if (!provider) {
+				throw new Error('Provider or Wallet not loaded');
+			}
+			balance = (
+				(await connection.getBalance($walletStore.publicKey!)) / LAMPORTS_PER_SOL
+			).toFixed(5);
+		} catch (e: any) {
+			toast.error(`${e.message || e}`);
 		}
 	};
 
@@ -46,6 +62,13 @@
 			if (!provider) {
 				throw new Error('Provider or Wallet not loaded');
 			}
+
+			const balance = await connection.getBalance(getCounterAddress(provider.publicKey!));
+
+			if (balance !== 0) {
+				throw 'counter already created';
+			}
+
 			const txSig = await program.methods
 				.createCounter()
 				.accountsStrict({
@@ -55,11 +78,15 @@
 				})
 				.rpc();
 
-			toast(
-				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=devnet`
-			);
+			toast.success('Transaction successful', {
+				action: {
+					label: 'See Explorer',
+					onClick: () =>
+						(window.location.href = `https://explorer.solana.com/tx/${txSig}?cluster=devnet`)
+				}
+			});
 		} catch (e: any) {
-			toast(`❌ ${e.message || e}`);
+			toast.error(`${e.message || e}`);
 		}
 	};
 
@@ -68,6 +95,13 @@
 			if (!provider) {
 				throw new Error('Provider or Wallet not loaded');
 			}
+
+			const balance = await connection.getBalance(getCounterAddress(provider.publicKey!));
+
+			if (balance === 0) {
+				throw 'counter not created';
+			}
+
 			const txSig = await program.methods
 				.incrementCount()
 				.accountsStrict({
@@ -75,27 +109,27 @@
 					counter: getCounterAddress(provider.publicKey!)
 				})
 				.rpc();
-			toast(
-				`✅ Transaction successful - https://explorer.solana.com/tx/${txSig}?cluster=devnet`
-			);
+			toast.success('Transaction successful', {
+				action: {
+					label: 'See Explorer',
+					onClick: () =>
+						(window.location.href = `https://explorer.solana.com/tx/${txSig}?cluster=devnet`)
+				}
+			});
 		} catch (e: any) {
-			toast(`❌ ${e.message || e}`);
+			toast.error(`${e.message || e}`);
 		}
 	};
 </script>
 
 <div class="mt-16 flex flex-col items-center justify-center space-y-8">
-	<div class="w-[360px] text-right italic">
-		<p class="pr-4 text-lg">Demo app</p>
-	</div>
-
-  {$walletStore.publicKey?.toBase58() || "not connected"}
+	{$walletStore.publicKey?.toBase58() || 'not connected'}
 
 	<div class="hidde flex flex-col items-center justify-center p-4 text-center">
 		<div class="border p-4">
 			<div class="min-w-32 p-2">
 				<h1>Counter</h1>
-				<h1 class="text-6xl">{count}</h1>
+				<h1 class="text-6xl">{loading ? '-' : count}</h1>
 			</div>
 			{#if provider}
 				<div class="space-x-2 p-2">
@@ -103,7 +137,7 @@
 				</div>
 				<div class="space-x-2 p-2">
 					<Button on:click={createCounter}>Create Counter</Button>
-					<Button on:click={getBalance}>Get Balance: {balance}</Button>
+					<Button on:click={getBalance}>Get Balance: {balance} SOL</Button>
 					<Button on:click={getCount}>Refresh Count</Button>
 				</div>
 			{/if}

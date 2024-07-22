@@ -29,16 +29,14 @@
     },
     "peerDependencies": {
         "@solana/wallet-adapter-base": "^0.9.23",
+        "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
         "svelte": "^4.2.18"
     },
     "dependencies": {
-        "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
         "@wallet-standard/app": "^1.0.1",
         "@wallet-standard/base": "^1.0.1"
     },
     "devDependencies": {
-        "@solana/wallet-adapter-base": "^0.9.23",
-        "svelte": "^4.2.18",
         "shx": "^0.3.4"
     },
     "keywords": [

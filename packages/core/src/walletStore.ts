@@ -7,7 +7,6 @@ import type {
     SignerWalletAdapterProps,
     SignInMessageSignerWalletAdapter,
     SignInMessageSignerWalletAdapterProps,
-    StandardWalletAdapter as Sta,
     WalletError,
     WalletName,
 } from '@solana/wallet-adapter-base';
@@ -16,8 +15,7 @@ import { Connection, PublicKey, Transaction, TransactionSignature, VersionedTran
 import { get, writable } from 'svelte/store';
 import { WalletNotSelectedError } from './errors.js';
 import { getLocalStorage, setLocalStorage } from './localStorage.js';
-// import { standardWalletAdapterStore } from "./wallet-standard.js";
-import { getStandardWalletAdapterStore } from '@thewuh/wallet-standard-wallet-adapter-svelte';
+import { createStandardWalletAdapterStore } from '@thewuh/wallet-standard-wallet-adapter-svelte';
 import { StandardWalletAdapter } from '@solana/wallet-standard-wallet-adapter-base';
 
 interface Wallet {
@@ -58,14 +56,14 @@ export interface WalletStore {
         connection: Connection,
         options?: SendTransactionOptions
     ): Promise<TransactionSignature>;
-    signAllTransactions: SignerWalletAdapter['signAllTransactions'] | undefined;
-    signMessage: MessageSignerWalletAdapter['signMessage'] | undefined;
-    signTransaction: SignerWalletAdapter['signTransaction'] | undefined;
-    signIn: SignInMessageSignerWalletAdapter['signIn'] | undefined;
+    signAllTransactions: SignerWalletAdapterProps['signAllTransactions'] | undefined;
+    signMessage: MessageSignerWalletAdapterProps['signMessage'] | undefined;
+    signTransaction: SignerWalletAdapterProps['signTransaction'] | undefined;
+    signIn: SignInMessageSignerWalletAdapterProps['signIn'] | undefined;
 }
 
 export const walletStore = createWalletStore();
-export const standardWalletStore = getStandardWalletAdapterStore();
+export const standardWalletAdapterStore = createStandardWalletAdapterStore();
 
 function addAdapterEventListeners(adapter: Adapter) {
     const { onError, wallets } = get(walletStore);
@@ -168,9 +166,6 @@ function createWalletStore() {
 
         const adapter = walletsByName?.[name as WalletName] ?? null;
 
-        //@ts-ignore
-        console.log('here to test adapter update name signTransaction here... :', adapter?.signTransaction);
-
         setLocalStorage(localStorageKey, name);
         updateWalletState(adapter);
     }
@@ -190,7 +185,6 @@ function createWalletStore() {
 
             // Sign a transaction if the wallet supports it
             if ('signTransaction' in adapter || adapter instanceof StandardWalletAdapter) {
-                console.log('sign transaction triggered by adapter:', adapter.name, 'signTransaction' in adapter);
                 signTransaction = async function <T extends Transaction | VersionedTransaction>(transaction: T) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
@@ -200,11 +194,6 @@ function createWalletStore() {
 
             // Sign multiple transactions if the wallet supports it
             if ('signAllTransactions' in adapter || adapter instanceof StandardWalletAdapter) {
-                console.log(
-                    'sign all transactions triggered by adapter:',
-                    adapter.name,
-                    'signAllTransactions' in adapter
-                );
                 signAllTransactions = async function <T extends Transaction | VersionedTransaction>(transactions: T[]) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
@@ -214,7 +203,6 @@ function createWalletStore() {
 
             // Sign an arbitrary message if the wallet supports it
             if ('signMessage' in adapter || adapter instanceof StandardWalletAdapter) {
-                console.log('sign message triggered by adapter:', adapter.name, 'signMessage' in adapter);
                 signMessage = async function (message: Uint8Array) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
@@ -225,7 +213,6 @@ function createWalletStore() {
             // signIn doesn't seem to be affected by this for some reason
             // sign in if the wallet supports it
             if ('signIn' in adapter) {
-                console.log('signIn in adapter');
                 signIn = async function (input?) {
                     const { connected } = get(walletStore);
                     if (!connected) throw newError(new WalletNotConnectedError());
@@ -289,11 +276,7 @@ export async function initialize({
         return walletsByName;
     }, {});
 
-    console.log('wallets by name:', walletsByName);
-
     // Wrap adapters to conform to the `Wallet` interface
-    wallets.forEach((adapter) => console.log('ready state:', adapter.readyState));
-
     const mapWallets = wallets.map((adapter) => ({
         adapter,
         readyState: adapter.readyState,

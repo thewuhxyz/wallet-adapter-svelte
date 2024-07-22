@@ -5,9 +5,7 @@ import type { Wallet } from '@wallet-standard/base';
 import { onDestroy, onMount } from 'svelte';
 import { get, writable } from 'svelte/store';
 
-export const standardWalletAdapterStore = getStandardWalletAdapterStore()
-
-export function getStandardWalletAdapterStore() {
+export function createStandardWalletAdapterStore() {
     const { subscribe, update } = writable<Readonly<StandardWalletAdapter[]>>([]);
 
     const { get: getWallets, on } = getStandardWallets();
@@ -16,9 +14,9 @@ export function getStandardWalletAdapterStore() {
 
     function initialize() {
         onMount(() => {
-            initializeAdapters();
-
             const { invalidate } = setupListeners();
+
+            initializeAdapters();
 
             return invalidate;
         });
@@ -27,7 +25,6 @@ export function getStandardWalletAdapterStore() {
     }
 
     function setupListeners(): { invalidate: () => void } {
-        console.log('adapters setup!!!');
         const listeners = [
             on('register', (...wallets) => runUpdate(wrapWalletsWithAdapters(wallets))),
             on('unregister', (...wallets) =>
@@ -58,8 +55,7 @@ export function getStandardWalletAdapterStore() {
         const warnings = new Set<WalletName>();
         return [
             ...standardAdapter(),
-            ...adapters
-            .filter(({ name }) => {
+            ...adapters.filter(({ name }) => {
                 if (standardAdapter().some((standardAdapter) => standardAdapter.name === name)) {
                     if (!warnings.has(name)) {
                         warnings.add(name);

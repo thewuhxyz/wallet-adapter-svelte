@@ -5,17 +5,15 @@
 	import { type DemoProgram, DemoProgramIDLJson } from '$lib/idl';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import '../app.css';
+	import { clusterApiUrl } from '@solana/web3.js';
 
 	const localStorageKey = 'walletAdapter';
-	const network = 'http://127.0.0.1:8899';
-
-	// const wallets = undefined;
-	const wallets = [new PhantomWalletAdapter()];
+	const network = clusterApiUrl('devnet');
 
 	const idl = DemoProgramIDLJson as DemoProgram;
 </script>
 
-<WalletProvider {localStorageKey} wallets={wallets || []} />
+<WalletProvider {localStorageKey} wallets={[]} />
 <AnchorConnectionProvider {network} {idl}>
 	<slot />
 	<Toaster />

@@ -3,4 +3,4 @@
 '@thewuh/wallet-standard-wallet-adapter-svelte': minor
 ---
 
-Release: Core & Standand
+Release: Core & Standard

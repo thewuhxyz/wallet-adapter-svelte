@@ -20,4 +20,9 @@ pnpm dev
 
 ```
 
+## Demo site
+
+- [Demo site][1]
+
+[1]: https://wallet-adapter-svelte.thewuh.xyz/
 

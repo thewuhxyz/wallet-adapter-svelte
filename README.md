@@ -1,4 +1,5 @@
 # `@thewuh/wallet-adapter-svelte`
+_NB: this is a hard fork of the [@svelte-on-solana/wallet-adapter](https://github.com/svelte-on-solana/wallet-adapter) with added support for Wallet Standard and updated Anchor helper._
 
 ![Wallets](wallets-adapter.png)
 
@@ -12,6 +13,7 @@ Modular TypeScript wallet adapter and UI components for Solana/Anchor applicatio
 - [Core][2] - Svelte Store which exposes methods and properties to run the wallet in your application
 - [UI][3] - Pre-built components for integrating with Solana wallets using Svelte
 - [Anchor][4] - Helper components for working with Anchor
+- [Example][5] - Example app using packages
 
 ## Build from Source
 
@@ -33,8 +35,8 @@ pnpm build
 
 4. Run locally:
 ```shell
-cd packages/ui/
-yarn start
+cd packages/example/
+pnpm start
 ```
 
 [1]: https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/standard/README.md/
@@ -42,4 +44,4 @@ yarn start
 [3]: https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/ui/README.md
 [4]: https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/anchor/README.md
 [5]: https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/example
-[6]: https://solana-svelte-counter.netlify.app/
+[6]: https://wallet-adapter-svelte.thewuh.xyz/

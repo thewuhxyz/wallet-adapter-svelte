@@ -115,4 +115,4 @@ See example implementations of the `@thewuh/wallet-adapter-svelte-ui` library.
 -   [Source code](https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/example)
 -   [Demo site][1]
 
-[1]: https://github.com/silvestrevivo/solana-svelte-counter/tree/master/app
+[1]: https://wallet-adapter-svelte.thewuh.xyz/

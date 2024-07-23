@@ -1,6 +1,6 @@
 {
     "name": "@thewuh/wallet-standard-wallet-adapter-svelte",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "author": "The Wuh <hi@thewuh.xyz> (https://dev.thewuh.xyz)",
     "repository": {
         "type": "git",

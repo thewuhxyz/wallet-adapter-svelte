@@ -7,6 +7,18 @@ Modular TypeScript wallet adapter and UI components for Solana/Anchor applicatio
 
 [View demo][6] / [Browse demo code][5]
 
+## Quick installation
+
+In your existing project, install: 
+
+```bash
+npm install @thewuh/wallet-adapter-svelte-core \
+            @thewuh/wallet-adapter-svelte-ui\
+            @thewuh/wallet-adapter-svelte-anchor\
+            @solana/web3.js\
+```
+
+
 ## Packages
 
 - [Standard][1] - Svelte Store that helps to manage adapters that follow the Wallet Standard

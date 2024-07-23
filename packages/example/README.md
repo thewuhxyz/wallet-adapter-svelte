@@ -7,9 +7,9 @@ This is an example app using `core`, `ui`, and `anchor`.
 In your existing project, install: 
 
 ```bash
-npm install @thewuh/wallet-standard-wallet-adapter-svelte \
-            @solana/wallet-adapter-base\
-            @solana/wallet-standard-wallet-adapter-base\
+npm install @thewuh/wallet-adapter-svelte-core \
+            @thewuh/wallet-adapter-svelte-ui\
+            @thewuh/wallet-adapter-svelte-anchor\
             @solana/web3.js\
 ```
 

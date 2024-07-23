@@ -2,7 +2,14 @@
     "name": "@thewuh/wallet-adapter-svelte-core",
     "version": "0.0.0",
     "author": "Svelte on Solana",
-    "repository": "https://github.com/thewuhxyz/wallet-adapter-svelte",
+    "maintainers": [
+        "The Wuh <hi@thewuh.xyz> (https://dev.thewuh.xyz)"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/thewuhxyz/wallet-adapter-svelte.git",
+        "directory": "packages/core"
+    },
     "license": "Apache-2.0",
     "type": "module",
     "sideEffects": false,

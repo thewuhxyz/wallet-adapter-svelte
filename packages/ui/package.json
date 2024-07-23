@@ -1,6 +1,15 @@
 {
 	"name": "@thewuh/wallet-adapter-svelte-ui",
-	"version": "0.0.1",
+	"version": "0.0.0",
+	"author": "Svelte on Solana",
+	"maintainers": [
+		"The Wuh <hi@thewuh.xyz> (https://dev.thewuh.xyz)"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/thewuhxyz/wallet-adapter-svelte.git",
+		"directory": "packages/ui"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
@@ -22,6 +31,13 @@
 		"dist",
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
+	],
+	"keywords": [
+		"svelte",
+		"wallet",
+		"adapter",
+		"wallet-adapter",
+		"solana"
 	],
 	"devDependencies": {
 		"@solana/wallet-adapter-base": "^0.9.23",
@@ -56,5 +72,7 @@
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
-	"sideEffects": ["*.css"]
+	"sideEffects": [
+		"*.css"
+	]
 }

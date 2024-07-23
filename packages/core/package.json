@@ -1,37 +1,50 @@
 {
-    "name": "@svelte-on-solana/wallet-adapter-core",
-    "version": "1.0.11-alpha.0",
+    "name": "@thewuh/wallet-adapter-svelte-core",
+    "version": "0.0.0",
     "author": "Svelte on Solana",
-    "repository": "https://github.com/svelte-on-solana/wallet-adapter",
+    "maintainers": [
+        "The Wuh <hi@thewuh.xyz> (https://dev.thewuh.xyz)"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/thewuhxyz/wallet-adapter-svelte.git",
+        "directory": "packages/core"
+    },
     "license": "Apache-2.0",
     "type": "module",
     "sideEffects": false,
-    "main": "lib/cjs/index.js",
-    "module": "lib/esm/index.mjs",
-    "types": "lib/esm/index.d.ts",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.mjs",
+    "types": "dist/esm/index.d.ts",
     "exports": {
-        "import": "./lib/esm/index.mjs",
-        "require": "./lib/cjs/index.js"
+        "import": "./dist/esm/index.mjs",
+        "require": "./dist/cjs/index.js",
+        "types": "./dist/esm/index.d.ts"
     },
     "files": [
-        "lib",
-        "src",
+        "dist",
         "LICENSE"
     ],
     "publishConfig": {
         "access": "public"
     },
     "scripts": {
-        "clean": "shx rm -rf lib/*",
-        "build": "yarn clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json",
-        "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > lib/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > lib/esm/package.json"
+        "clean": "shx rm -rf dist/*",
+        "build": "pnpm clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json",
+        "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > dist/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > dist/esm/package.json"
+    },
+    "peerDependencies": {
+        "svelte": "^4.2.18"
     },
     "dependencies": {
+        "@solana/wallet-adapter-base": "^0.9.23",
+        "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
+        "@thewuh/wallet-standard-wallet-adapter-svelte": "workspace:*",
+        "eventemitter3": "^5.0.1"
+    },
+    "devDependencies": {
         "@types/node-fetch": "^2.6.2",
-        "@solana/wallet-adapter-base": "^0.9.19",
-        "@solana/web3.js": "^1.70.0",
-        "eventemitter3": "^4.0.7",
-        "svelte": "^3.0.0"
+        "@solana/web3.js": "~1.88.0"
     },
     "keywords": [
         "svelte",

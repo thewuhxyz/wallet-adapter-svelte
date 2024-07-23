@@ -1,0 +1,52 @@
+{
+    "name": "@thewuh/wallet-standard-wallet-adapter-svelte",
+    "version": "0.0.0",
+    "author": "The Wuh <hi@thewuh.xyz> (https://dev.thewuh.xyz)",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/thewuhxyz/wallet-adapter-svelte.git",
+        "directory": "packages/standard"
+    },
+    "license": "Apache-2.0",
+    "type": "module",
+    "sideEffects": false,
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.mjs",
+    "types": "dist/esm/index.d.ts",
+    "exports": {
+        "import": "./dist/esm/index.mjs",
+        "require": "./dist/cjs/index.js",
+        "types": "./dist/esm/index.d.ts"
+    },
+    "files": [
+        "dist",
+        "LICENSE"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "clean": "shx rm -rf dist/*",
+        "build": "pnpm clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json",
+        "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > dist/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > dist/esm/package.json"
+    },
+    "peerDependencies": {
+        "@solana/wallet-adapter-base": "^0.9.23",
+        "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
+        "svelte": "^4.2.18"
+    },
+    "dependencies": {
+        "@wallet-standard/app": "^1.0.1",
+        "@wallet-standard/base": "^1.0.1"
+    },
+    "devDependencies": {
+        "shx": "^0.3.4"
+    },
+    "keywords": [
+        "svelte",
+        "wallet",
+        "adapter",
+        "wallet-adapter",
+        "solana"
+    ]
+}

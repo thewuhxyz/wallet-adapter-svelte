@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Connection } from '@solana/web3.js';
 	import type { Commitment, ConnectionConfig } from '@solana/web3.js';
-	import { workSpace } from './workSpace';
+	import { workSpace } from './workSpace.js';
 
 	export let network: string,
 		config: Commitment | ConnectionConfig | undefined = 'processed';

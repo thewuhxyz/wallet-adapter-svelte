@@ -1,66 +1,69 @@
 {
     "private": true,
-    "name": "@svelte-on-solana/wallet-adapter",
+    "name": "@thewuh/wallet-adapter-svelte",
     "author": "Svelte on Solana",
-    "repository": "https://github.com/svelte-on-solana/wallet-adapter",
+    "maintainers": [
+        "The Wuh <hi@thewuh.xyz> (https://dev.thewuh.xyz)"
+    ],
+    "repository": "https://github.com/thewuhxyz/wallet-adapter-svelte",
     "license": "Apache-2.0",
     "type": "module",
-    "workspaces": {
-        "packages": [
-            "packages/*"
-        ],
-        "nohoist": [
-            "**/@babel/preset-env",
-            "**/@babel/preset-env/**",
-            "**/babel-loader",
-            "**/babel-loader/**",
-            "**/webpack",
-            "**/webpack/**"
-        ]
-    },
     "engines": {
-        "node": ">= 14"
+        "node": ">= 18"
     },
     "publishConfig": {
         "access": "public"
     },
+    "packageManager": "pnpm@9.4.0",
     "scripts": {
-        "clean": "lerna run clean",
-        "build": "lerna run build",
-        "test": "lerna run test",
-        "publish": "lerna publish from-package",
-        "deploy": "yarn deploy:docs && yarn deploy:example",
-        "deploy:docs": "yarn docs && gh-pages --dist docs --dotfiles",
+        "changeset": "changeset",
+        "clean": "turbo run clean",
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "test": "turbo run test",
+        "build:anchor": "pnpm build --filter=@thewuh/wallet-adapter-svelte-anchor",
+        "build:core": "pnpm build --filter=@thewuh/wallet-adapter-svelte-core",
+        "build:standard": "pnpm build --filter=@thewuh/wallet-standard-wallet-adapter-svelte",
+        "build:ui": "pnpm build --filter=@thewuh/wallet-adapter-svelte-ui",
+        "build:packages": "pnpm build:standard && pnpm build:core && pnpm build:ui && pnpm build:anchor",
+        "install:anchor": "pnpm install --filter=@thewuh/wallet-adapter-svelte-anchor",
+        "install:core": "pnpm install --filter=@thewuh/wallet-adapter-svelte-core",
+        "install:standard": "pnpm install --filter=@thewuh/wallet-standard-wallet-adapter-svelte",
+        "install:ui": "pnpm install --filter=@thewuh/wallet-adapter-svelte-ui",
+        "deploy": "pnpm deploy:docs && pnpm deploy:example",
+        "deploy:docs": "pnpm docs && gh-pages --dist docs --dotfiles",
         "deploy:example": "gh-pages --dist packages/starter/example/out --dest example --dotfiles",
         "docs": "shx rm -rf docs && NODE_OPTIONS=--max_old_space_size=8192 typedoc && shx cp ./{.nojekyll,wallets.png} docs/",
         "fmt": "prettier --write '{*,**/*}.{js,ts,jsx,tsx,json}'",
         "lint": "eslint --ext .ts . && prettier --check '{*,**/*}.{js,ts,jsx,tsx,json}'",
-        "lint:fix": "eslint --fix --ext .ts . && yarn fmt",
-        "nuke": "shx rm -rf {.,packages/*}/{node_modules,yarn.lock}"
+        "lint:fix": "eslint --fix --ext .ts . && pnpm fmt",
+        "nuke": "shx rm -rf {.,packages/*}/{node_modules,pnpm-lock.yaml}",
+        "release": "pnpm build:all && changeset publish"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.16.5",
+        "@changesets/cli": "^2.27.7",
         "@types/eslint": "^8.2.1",
         "@types/eslint-plugin-prettier": "^3.1.0",
-        "@types/node": "^16.11.12",
+        "@types/node": "^20.10.0",
         "@types/prettier": "^2.4.2",
-        "@typescript-eslint/eslint-plugin": "^5.6.0",
-        "@typescript-eslint/parser": "^5.6.0",
-        "babel-eslint": "^10.1.0",
-        "eslint": "^7.32.0",
-        "eslint-config-prettier": "^8.3.0",
+        "@typescript-eslint/eslint-plugin": "^7.16.1",
+        "@typescript-eslint/parser": "^7.16.1",
+        "eslint": "^9.7.0",
+        "eslint-config-prettier": "^9.1.0",
         "eslint-config-react-app": "^7.0.0",
-        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-prettier": "^5.2.1",
         "gh-pages": "^3.2.3",
-        "lerna": "^4.0.0",
         "prettier": "^2.5.1",
         "shx": "^0.3.3",
         "tslib": "^2.3.0",
+        "turbo": "^1.13.2",
         "typedoc": "^0.22.10",
-        "typescript": "~4.4.4",
+        "typescript": "~5.0.2",
         "typescript-esm": "^2.0.0"
     },
-    "dependencies": {
-        "svelte2tsx": "^0.5.5"
+    "resolutions": {
+        "@solana/web3.js": "~1.88.0",
+        "rpc-websockets": "~7.9.0"
     }
 }

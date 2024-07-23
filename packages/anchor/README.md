@@ -1,58 +1,109 @@
-# create-svelte
+# `@thewuh/wallet-adapter-svelte-anchor`
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+`AnchorConnectionProvider` component and `WorkSpace` for Solana wallets using Svelte
 
-Read more about creating a library [in the docs](https://kit.svelte.dev/docs/packaging).
+## Installing
 
-## Creating a project
+You have already installed the core package to run the wallet Svelte Store [@thewuh/wallet-adapter-svelte-core](https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/core/README.md) and the UI components to use the wallet [@thewuh/wallet-adapter-svelte-ui](https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/ui/README.md). Then install the `AnchorConnectionProvider` component and `workSpace` file contained in this package.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+```shell
+npm i @thewuh/wallet-adapter-svelte-anchor
 ```
 
-## Developing
+## Set Up
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Use the same setup as [@thewuh/wallet-adapter-svelte-ui](https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/ui/README.md), using `AnchorConnectionProvider` in place of `ConnectionProvider`.
 
-```bash
-npm run dev
+The `AnchorConnectionProvider` for Anchor Dapps accepts the next props.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+| prop    | type     | default |
+| ------- | -------- | ------- |
+| network | `string` |         |
+| idl     | `Idl`    |         |
+
+It is automatically connected to a `getWorkspace` method that returns a store containing a `WorkSpace` context, which defined all the parameters to share among the components in your Anchor Dapp **(connection, provider, program, systemProgram and network)**.
+
+## SvelteKit
+
+In the **+layout.svelte** component you can import the wallets and setup the UI components.
+
+```svelte
+<script lang="ts">
+	import { walletStore } from '@thewuh/wallet-adapter-svelte-core';
+	import { WalletProvider, WalletMultiButton } from '@svelte-on-solana/wallet-adapter-svelte-ui';
+	import {
+		AnchorConnectionProvider,
+		getWorkspace
+	} from '@svelte-on-solana/wallet-adapter-svelte-anchor';
+	import { clusterApiUrl } from '@solana/web3.js';
+	import myAnchorProjectIdl from '../../../target/idl/<my-anchor-project>.json';
+	import { type MyAnchorProject } from '../../../target/types/<my-anchor-project>.ts';
+
+	const localStorageKey = 'walletAdapter';
+	const network = clusterApiUrl('devnet');
+
+	const idl = myAnchorProjectIdl as MyAnchorProject;
+</script>
+
+<WalletProvider {localStorageKey} wallets={[]} />
+<AnchorConnectionProvider {network} {idl}>
+	<WalletMultiButton />
+	<slot />
+</AnchorConnectionProvider>
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+### Usage
 
-## Building
+Use the `Workspace` context like:
+```svelte
+<script lang="ts">
+	import { getWorkspace } from '@thewuh/wallet-adapter-svelte-anchor';
+	import { type MyAnchorProject } from '../../../target/types/<my-anchor-project>.ts';
 
-To build your library:
-
-```bash
-npm run package
+	$: w = getWorkspace<MyAnchorProject>();
+  $: ({ connection, program, provider, systemProgram } = $w);
+  //...
+</script>
 ```
 
-To create a production version of your showcase app:
+## Svelte Template
 
-```bash
-npm run build
+In `App.svelte` or the entry point of your SPA, you can setup the wallet and components like this.
+
+```svelte
+<script lang="ts">
+	import { walletStore } from '@thewuh/wallet-adapter-svelte-core';
+	import { WalletProvider, WalletMultiButton } from '@svelte-on-solana/wallet-adapter-svelte-ui';
+	import {
+		AnchorConnectionProvider,
+		getWorkspace
+	} from '@svelte-on-solana/wallet-adapter-svelte-anchor';
+	import { clusterApiUrl } from '@solana/web3.js';
+	import myAnchorProject from '../../../target/idl/<my-anchor-project>.json';
+	import { MyAnchorProject } from '../../../target/types/<my-anchor-project>.ts';
+	import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+
+	const localStorageKey = 'walletAdapter';
+	const network = clusterApiUrl('devnet'); // localhost or mainnet
+
+	// May not be necessary. Most wallet support wallet standard
+	let wallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
+</script>
+
+<WalletProvider {localStorageKey} {wallets} autoConnect />
+<AnchorConnectionProvider {network} {idl}>
+	<WalletMultiButton />
+	{#if $walletStore?.connected}
+		<div>My wallet is connected</div>
+	{/if}
+</AnchorConnectionProvider>
 ```
 
-You can preview the production build with `npm run preview`.
+## Example Implementation
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+See example implementations of the `@thewuh/wallet-adapter-svelte-ui` library.
 
-## Publishing
+-   [Source code](https://github.com/thewuhxyz/wallet-adapter-svelte/blob/main/packages/example)
+-   [Demo site][1]
 
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
-```
+[1]: https://wallet-adapter-svelte.thewuh.xyz/

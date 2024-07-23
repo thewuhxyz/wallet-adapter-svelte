@@ -38,7 +38,7 @@
         "lint": "eslint --ext .ts . && prettier --check '{*,**/*}.{js,ts,jsx,tsx,json}'",
         "lint:fix": "eslint --fix --ext .ts . && pnpm fmt",
         "nuke": "shx rm -rf {.,packages/*}/{node_modules,pnpm-lock.yaml}",
-        "release": "pnpm build:all && changeset publish"
+        "release": "pnpm build:packages && changeset publish"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.16.5",

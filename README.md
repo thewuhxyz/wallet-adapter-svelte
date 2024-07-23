@@ -36,7 +36,7 @@ git clone https://github.com/thewuh/wallet-adapter-svelte.git
 
 2. Install dependencies:
 ```shell
-cd wallet-adapter
+cd wallet-adapter-svelte
 pnpm install
 ```
 

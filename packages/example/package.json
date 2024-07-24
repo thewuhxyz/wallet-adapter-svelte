@@ -20,7 +20,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@thewuh/wallet-adapter-svelte-anchor": "workspace:*",
-		"@thewuh/wallet-adapter-svelte-core": "workspace:*",
+		"@thewuh/wallet-adapter-svelte-core": ">=0.1.1",
 		"@thewuh/wallet-adapter-svelte-ui": "workspace:*",
 		"@types/eslint": "^8.56.7",
 		"autoprefixer": "^10.4.19",

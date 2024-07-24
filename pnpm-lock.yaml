@@ -214,8 +214,8 @@ importers:
         specifier: workspace:*
         version: link:../anchor
       '@thewuh/wallet-adapter-svelte-core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: '>=0.1.1'
+        version: 0.1.1(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0)(svelte@4.2.18)
       '@thewuh/wallet-adapter-svelte-ui':
         specifier: workspace:*
         version: link:../ui

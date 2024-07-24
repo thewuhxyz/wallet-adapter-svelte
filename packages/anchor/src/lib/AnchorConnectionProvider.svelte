@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends Idl">
-	import { get, writable, type Writable } from 'svelte/store';
+	import { writable, type Writable } from 'svelte/store';
 	import { setContext } from 'svelte';
 	import { type WorkSpace, getWorkspace } from './workSpace.js';
 	import { web3, Program, AnchorProvider, type Idl, type Wallet } from '@coral-xyz/anchor';

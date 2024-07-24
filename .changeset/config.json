@@ -7,5 +7,5 @@
     "access": "public",
     "baseBranch": "main",
     "updateInternalDependencies": "patch",
-    "ignore": ["example", "@thewuh/wallet-adapter-svelte-anchor", "@thewuh/wallet-adapter-svelte-ui"]
+    "ignore": ["example"]
 }

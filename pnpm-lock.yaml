@@ -79,8 +79,8 @@ importers:
         specifier: ^0.30.1
         version: 0.30.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@thewuh/wallet-adapter-svelte-core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: '*'
+        version: 0.1.0(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0)(svelte@4.2.18)
       eventemitter3:
         specifier: ^5.0.1
         version: 5.0.1
@@ -302,8 +302,8 @@ importers:
         specifier: ~1.88.0
         version: 1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@thewuh/wallet-adapter-svelte-core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: '*'
+        version: 0.1.0(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0)(svelte@4.2.18)
       eventemitter3:
         specifier: ^5.0.1
         version: 5.0.1
@@ -2123,6 +2123,18 @@ packages:
 
   '@swc/helpers@0.5.12':
     resolution: {integrity: sha512-KMZNXiGibsW9kvZAO1Pam2JPTDBm+KSHMMHWdsyI/1DbIZjT2A6Gy3hblVXUMEDvUAKq+e0vL0X0o54owWji7g==}
+
+  '@thewuh/wallet-adapter-svelte-core@0.1.0':
+    resolution: {integrity: sha512-JNL2fif0oJdTPsUtB89fnCiX4l8JWSZRFPQqEQ3imbrHe5/rhS+qIGkkubRNHmr7btEmsqy6Iz0jPdlMWwR0Rw==}
+    peerDependencies:
+      svelte: ^4.2.18
+
+  '@thewuh/wallet-standard-wallet-adapter-svelte@0.1.0':
+    resolution: {integrity: sha512-kB/aMxex6PgsPox+YwgMjdb1Z8sfUJH2hhhZXDN0Kn9z0yfQYv1G8bEO6+5YIGXUOM7n3GRp5Dja93pwPA2dOw==}
+    peerDependencies:
+      '@solana/wallet-adapter-base': ^0.9.23
+      '@solana/wallet-standard-wallet-adapter-base': ^1.1.2
+      svelte: ^4.2.18
 
   '@toruslabs/base-controllers@2.9.0':
     resolution: {integrity: sha512-rKc+bR4QB/wdbH0CxLZC5e2PUZcIgkr9yY7TMd3oIffDklaYBnsuC5ES2/rgK1aRUDRWz+qWbTwLqsY6PlT37Q==}
@@ -8370,6 +8382,25 @@ snapshots:
   '@swc/helpers@0.5.12':
     dependencies:
       tslib: 2.6.3
+
+  '@thewuh/wallet-adapter-svelte-core@0.1.0(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0)(svelte@4.2.18)':
+    dependencies:
+      '@solana/wallet-adapter-base': 0.9.23(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))
+      '@solana/wallet-standard-wallet-adapter-base': 1.1.2(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0)
+      '@thewuh/wallet-standard-wallet-adapter-svelte': 0.1.0(@solana/wallet-adapter-base@0.9.23(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)))(@solana/wallet-standard-wallet-adapter-base@1.1.2(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0))(svelte@4.2.18)
+      eventemitter3: 5.0.1
+      svelte: 4.2.18
+    transitivePeerDependencies:
+      - '@solana/web3.js'
+      - bs58
+
+  '@thewuh/wallet-standard-wallet-adapter-svelte@0.1.0(@solana/wallet-adapter-base@0.9.23(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)))(@solana/wallet-standard-wallet-adapter-base@1.1.2(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0))(svelte@4.2.18)':
+    dependencies:
+      '@solana/wallet-adapter-base': 0.9.23(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))
+      '@solana/wallet-standard-wallet-adapter-base': 1.1.2(@solana/web3.js@1.88.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bs58@5.0.0)
+      '@wallet-standard/app': 1.0.1
+      '@wallet-standard/base': 1.0.1
+      svelte: 4.2.18
 
   '@toruslabs/base-controllers@2.9.0(@babel/runtime@7.24.8)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:

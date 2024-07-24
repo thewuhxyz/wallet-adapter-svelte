@@ -1,6 +1,6 @@
 {
 	"name": "@thewuh/wallet-adapter-svelte-ui",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"author": "Svelte on Solana",
 	"maintainers": [
 		"The Wuh <hi@thewuh.xyz> (https://dev.thewuh.xyz)"

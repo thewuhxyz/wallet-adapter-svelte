@@ -14,10 +14,10 @@
     "type": "module",
     "sideEffects": false,
     "main": "dist/cjs/index.js",
-    "module": "dist/esm/index.mjs",
+    "module": "dist/esm/index.js",
     "types": "dist/esm/index.d.ts",
     "exports": {
-        "import": "./dist/esm/index.mjs",
+        "import": "./dist/esm/index.js",
         "require": "./dist/cjs/index.js",
         "types": "./dist/esm/index.d.ts"
     },
@@ -30,7 +30,7 @@
     },
     "scripts": {
         "clean": "shx rm -rf dist/*",
-        "build": "pnpm clean && tsc -p tsconfig.json; tsc-esm -p tsconfig.json && tsc -p tsconfig.cjs.json",
+        "build": "pnpm clean && tsc -p tsconfig.json; tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
         "postbuild": "echo '{\"type\":\"commonjs\"}' | npx json > dist/cjs/package.json && echo '{\"type\":\"module\"} ' | npx json > dist/esm/package.json"
     },
     "peerDependencies": {

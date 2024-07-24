@@ -11,7 +11,7 @@ import type {
     WalletName,
 } from '@solana/wallet-adapter-base';
 import { WalletNotConnectedError, WalletNotReadyError, WalletReadyState } from '@solana/wallet-adapter-base';
-import { Connection, PublicKey, Transaction, TransactionSignature, VersionedTransaction } from '@solana/web3.js';
+import type { Connection, PublicKey, Transaction, TransactionSignature, VersionedTransaction } from '@solana/web3.js';
 import { get, writable } from 'svelte/store';
 import { WalletNotSelectedError } from './errors.js';
 import { getLocalStorage, setLocalStorage } from './localStorage.js';

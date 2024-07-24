@@ -1,5 +1,11 @@
 # @thewuh/wallet-adapter-svelte-anchor
 
+## 0.1.1
+
+### Patch Changes
+
+- 8cc824f: Set minimum version to v0.1.1 for core as peer dependency
+
 ## 0.1.0
 
 ### Minor Changes
